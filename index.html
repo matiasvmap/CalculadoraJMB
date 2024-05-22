@@ -1,0 +1,183 @@
+<h1><!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Despachos</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(to right, #A3D5FF, #E0F7FA);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-image: url('https://www.toptal.com/designers/subtlepatterns/patterns/marble.png');
+        background-size: cover;
+        box-sizing: border-box;
+    }
+    .container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        box-sizing: border-box;
+        margin: 20px;
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        font-size: 1.5em;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+        font-size: 0.9em;
+    }
+    input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+        font-size: 0.9em;
+    }
+    button {
+        width: 100%;
+        padding: 10px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    .results {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+    }
+    .results p {
+        margin: 5px 0;
+        color: #333;
+        font-size: 0.9em;
+    }
+    .note {
+        margin-top: 15px;
+        color: #888;
+        font-size: 0.8em;
+    }
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.2em;
+        }
+        label, .results p, .note {
+            font-size: 0.8em;
+        }
+        input, button {
+            font-size: 0.8em;
+        }
+        .container {
+            padding: 15px;
+        }
+    }
+    @media (max-width: 480px) {
+        h1 {
+            font-size: 1em;
+        }
+        label, .results p, .note {
+            font-size: 0.7em;
+        }
+        input, button {
+            font-size: 0.7em;
+        }
+        .container {
+            padding: 10px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Calculadora de Despachos</h1>
+    <label for="precio_combustible">Precio del combustible por litro (CLP):</label>
+    <input type="number" id="precio_combustible" step="any">
+
+    <label for="consumo_promedio">Consumo promedio del vehículo (kilómetros por litro):</label>
+    <input type="number" id="consumo_promedio" step="any">
+
+    <label for="distancia_ruta">Distancia de la ruta en kilómetros:</label>
+    <input type="number" id="distancia_ruta" step="any">
+
+    <button onclick="calcularCostoDespacho()">Calcular Costo del Despacho</button>
+
+    <div class="results" id="resultados"></div>
+    <div class="note">Este ejercicio no considera el costo del tag</div>
+</div>
+
+<script>
+// Definir el costo en horas hombre (HH) y el costo de carga y descarga como constantes
+const costo_en_HH = 2875; // Ejemplo de costo en HH fijo
+const costo_carga_descarga = 2875; // Costo de carga y descarga
+
+// Función para calcular el costo total del despacho
+function calcular_costo_despacho(precio_combustible, consumo_promedio, distancia_ruta) {
+    // Calcular el consumo promedio del recorrido
+    const consumo_promedio_recorrido = distancia_ruta / consumo_promedio;
+    
+    // Calcular el costo del combustible para el recorrido
+    const costo_combustible = consumo_promedio_recorrido * precio_combustible;
+    
+    // Calcular el costo en HH basado en la distancia recorrida
+    const ciclos_HH = Math.floor(distancia_ruta / 30) + 1; // Se agrega uno para el concepto de equipaje
+    const costo_HH_total = ciclos_HH * costo_en_HH;
+    
+    // Calcular el costo total del despacho incluyendo el costo de carga y descarga
+    const costo_total = costo_combustible + costo_HH_total + costo_carga_descarga;
+    
+    return [consumo_promedio_recorrido, costo_combustible, costo_HH_total, costo_carga_descarga, costo_total];
+}
+
+// Función para formatear números con separadores de miles
+function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function calcularCostoDespacho() {
+    // Obtener los valores ingresados por el usuario
+    const precio_combustible = parseFloat(document.getElementById("precio_combustible").value);
+    const consumo_promedio = parseFloat(document.getElementById("consumo_promedio").value);
+    const distancia_ruta = parseFloat(document.getElementById("distancia_ruta").value);
+
+    // Calcular los costos
+    const [consumo_promedio_recorrido, costo_combustible, costo_HH_total, costo_carga_descarga, costo_total] = calcular_costo_despacho(precio_combustible, consumo_promedio, distancia_ruta);
+
+    // Mostrar los resultados con separadores de miles
+    document.getElementById("resultados").innerHTML = `
+        <h2>Resultados:</h2>
+        <p>Precio del combustible: ${formatNumber(precio_combustible.toFixed(0))} CLP/L</p>
+        <p>Consumo promedio del vehículo: ${consumo_promedio} KM/L</p>
+        <p>Distancia de la ruta: ${distancia_ruta} KM</p>
+        <p>Costo en HH por ${Math.floor(distancia_ruta / 30) + 1} ciclos: ${formatNumber(costo_HH_total.toFixed(0))} CLP</p>
+        <p>Costo de carga y descarga: ${formatNumber(costo_carga_descarga.toFixed(0))} CLP</p>
+        <p>Consumo promedio del recorrido: ${consumo_promedio_recorrido.toFixed(2)} L</p>
+        <p>Costo del combustible para el recorrido: ${formatNumber(costo_combustible.toFixed(0))} CLP</p>
+        <p>Costo total del despacho: ${formatNumber(costo_total.toFixed(0))} CLP</p>
+    `;
+}
+</script>
+
+</body>
+</html>
+</h1>
